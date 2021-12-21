@@ -201,8 +201,17 @@ class FlutterPluginRecordPlugin : FlutterPlugin, MethodCallHandler, ActivityAwar
     @Synchronized
     private fun stop() {
         if (audioHandler != null) {
+            Log.d("android voice", "isRecording " + audioHandler?.isRecording)
             if (audioHandler?.isRecording == true) {
                 audioHandler?.stopRecord()
+            } else {
+                //修复调用start之后又快速调用stop 导致停止录音失败bug
+                android.os.Handler().postDelayed({
+                    Log.d("android voice", "isRecording " + audioHandler?.isRecording)
+                    if (audioHandler?.isRecording == true) {
+                        audioHandler?.stopRecord()
+                    }
+                }, 300)
             }
         }
         Log.d("android voice  ", "stop")
